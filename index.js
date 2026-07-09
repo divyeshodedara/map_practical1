@@ -2,46 +2,15 @@ import express from "express"
 
 const app = express()
 
-function calculateAgeParts(birthDate, currentDate) {
-  let years = currentDate.getFullYear() - birthDate.getFullYear()
-  let months = currentDate.getMonth() - birthDate.getMonth()
-  let days = currentDate.getDate() - birthDate.getDate()
-  let hours = currentDate.getHours() - birthDate.getHours()
-  let minutes = currentDate.getMinutes() - birthDate.getMinutes()
-
-  if (minutes < 0) {
-    minutes += 60
-    hours -= 1
-  }
-
-  if (hours < 0) {
-    hours += 24
-    days -= 1
-  }
-
-  if (days < 0) {
-    const previousMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0)
-    days += previousMonth.getDate()
-    months -= 1
-  }
-
-  if (months < 0) {
-    months += 12
-    years -= 1
-  }
-
-  return { years, months, days, hours, minutes }
-}
-
 app.get("/", (req, res) => {
-  const { dob, age, months, days, hours, minutes, error } = req.query
+  const { dob, age, error } = req.query
 
   let ageMessage = ""
 
   if (error) {
     ageMessage = `<p style="color: #b91c1c;">${error}</p>`
-  } else if (dob && age && months && days && hours && minutes) {
-    ageMessage = `<p style="color: #166534;">Your age is ${age} years, ${months} months, ${days} days, ${hours} hours, and ${minutes} minutes.</p>`
+  } else if (dob && age) {
+    ageMessage = `<p style="color: #166534;">Your age is ${age} years.</p>`
   }
 
   res.send(`
@@ -122,18 +91,23 @@ app.get("/age", (req, res) => {
     return res.redirect("/?error=Please+select+a+date+of+birth.")
   }
 
-  const birthDate = new Date(`${dob}T00:00:00`)
+  const birthDate = new Date(dob)
 
   if (Number.isNaN(birthDate.getTime())) {
     return res.redirect("/?error=Please+enter+a+valid+date.")
   }
 
-  const now = new Date()
-  const { years, months, days, hours, minutes } = calculateAgeParts(birthDate, now)
+  const today = new Date()
+  let age = today.getFullYear() - birthDate.getFullYear()
 
-  return res.redirect(
-    `/?dob=${encodeURIComponent(dob)}&age=${years}&months=${months}&days=${days}&hours=${hours}&minutes=${minutes}`,
-  )
+  const monthDifference = today.getMonth() - birthDate.getMonth()
+  const dayDifference = today.getDate() - birthDate.getDate()
+
+  if (monthDifference < 0 || (monthDifference === 0 && dayDifference < 0)) {
+    age -= 1
+  }
+
+  return res.redirect(`/?dob=${encodeURIComponent(dob)}&age=${age}`)
 })
 
 const PORT = process.env.PORT || 3000
