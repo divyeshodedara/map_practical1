@@ -40,8 +40,8 @@ app.get("/", (req, res) => {
 
   if (error) {
     ageMessage = `<p style="color: #b91c1c;">${error}</p>`
-  } else if (dob && age && months && days && hours && minutes) {
-    ageMessage = `<p style="color: #166534;">Your age is ${age} years, ${months} months, ${days} days, ${hours} hours, and ${minutes} minutes.</p>`
+  } else if (dob && age) {
+    ageMessage = `<p style="color: #000;">Your age is ${age} years.</p>`
   }
 
   res.send(`
@@ -58,14 +58,17 @@ app.get("/", (req, res) => {
             min-height: 100vh;
             display: grid;
             place-items: center;
-            background: #f3f4f6;
+            background: #000;
+            color: #fff;
           }
 
           .card {
-            background: white;
+            background: #fff;
+            color: #000;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid #000;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
             width: min(100%, 420px);
           }
 
@@ -83,18 +86,23 @@ app.get("/", (req, res) => {
             font: inherit;
             padding: 0.75rem 1rem;
             border-radius: 8px;
-            border: 1px solid #d1d5db;
+            border: 2px solid #000;
+          }
+
+          input {
+            background: #fff;
+            color: #000;
           }
 
           button {
-            border: none;
-            background: #2563eb;
-            color: white;
+            background: #000;
+            color: #fff;
             cursor: pointer;
           }
 
           button:hover {
-            background: #1d4ed8;
+            background: #fff;
+            color: #000;
           }
         </style>
       </head>
